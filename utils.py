@@ -30,8 +30,7 @@ def getShapeOfDataset(inputDataset):
 		If the filename passed does not end in '.tif', '.tiff', '.json', or '.txt'
 	"""
 
-	if inputDataset[-4:] == '.tif' or inputDataset[-5:] == '.tiff': # https://stackoverflow.com/questions/46436522/python-count-total-number-of-pages-in-group-of-multi-page-tiff-files
-		img = Image.open(inputDataset)
+	if inputDataset[-4:] == '.tif' or inputDataset[-5:] == '.tiff':
 		width, height = img.size
 		count = 0
 		while True:
@@ -133,10 +132,6 @@ def getPointCloudImageSliceFromDataset(dataset, axis, index):
 		If `axis` is not equal to 'x', 'y', or 'z'
 	"""
 
-	#TODO add option to scale down the image (use half the total number of points, 1/4, etc.) Could load faster this way
-
-	#TODO make it so you don't have to load the whole array as a dataset to get the slice
-
 	dataset = getNumpyFromDataset(dataset)
 
 	if axis == 'x':
@@ -186,7 +181,7 @@ def getPointCloudImageSliceFromDataset(dataset, axis, index):
 
 	return pcd
 
-def complimentColor(hexValue=None, rgbTuple=None): #adopted from stackoverflow, https://stackoverflow.com/a/3943023/112731
+def complimentColor(hexValue=None, rgbTuple=None):
 	"""When given a color, returns either the white or black hex code, whichever would show up better as text over the passed color
 
 	This function is supposed to be used to pick which text color to use over a given color.
@@ -388,7 +383,7 @@ class TimeCounter:
 		else:
 			return "Cannot calculate time left, either just started or close to end"
 
-class LayerVisualizerRow(ttk.Frame): #TODO add doc string
+class LayerVisualizerRow(ttk.Frame): 
 	def __init__(self, master, color, index, changeCallback=False, **kw):
 		ttk.Frame.__init__(self, master, **kw)
 
@@ -415,55 +410,7 @@ class LayerVisualizerRow(ttk.Frame): #TODO add doc string
 	def GetFile(self):
 		return self.fileChooser.getFilepath().strip()
 
-# class CropSelection(ttk.Frame):
-# 	def __init__(self, master, title="Crop", **kw):
-# 		ttk.Frame.__init__(self, master, **kw)
-
-# 		self.Title = ttk.Label(self)
-# 		self.Title.configure(text=title)
-# 		self.Title.grid(column='0', columnspan='6', row='0')
-
-# 		self.xminLabel = ttk.Label(self)
-# 		self.xminLabel.configure(text='X Min: ')
-# 		self.xminLabel.grid(column='0', row='1')
-# 		self.xminEntry = ttk.Entry(self)
-# 		self.xminEntry.grid(column='1', row='1')
-
-# 		self.yminLabel = ttk.Label(self)
-# 		self.yminLabel.configure(text='Y Min:')
-# 		self.yminLabel.grid(column='2', row='1')
-# 		self.yminEntry = ttk.Entry(self)
-# 		self.yminEntry.grid(column='3', row='1')
-
-# 		self.zminLabel = ttk.Label(self)
-# 		self.zminLabel.configure(text='Z Min:')
-# 		self.zminLabel.grid(column='4', row='1')
-# 		self.zminEntry = ttk.Entry(self)
-# 		self.zminEntry.grid(column='5', row='1')
-
-
-# 		self.xmaxLabel = ttk.Label(self)
-# 		self.xmaxLabel.configure(text='X Max: ')
-# 		self.xmaxLabel.grid(column='0', row='2')
-# 		self.xmaxEntry = ttk.Entry(self)
-# 		self.xmaxEntry.grid(column='1', row='2')
-
-# 		self.ymaxLabel = ttk.Label(self)
-# 		self.ymaxLabel.configure(text='Y Max:')
-# 		self.ymaxLabel.grid(column='2', row='2')
-# 		self.ymaxEntry = ttk.Entry(self)
-# 		self.ymaxEntry.grid(column='3', row='2')
-
-# 		self.zmaxLabel = ttk.Label(self)
-# 		self.zmaxLabel.configure(text='Z Max:')
-# 		self.zmaxLabel.grid(column='4', row='2')
-# 		self.zmaxEntry = ttk.Entry(self)
-# 		self.zmaxEntry.grid(column='5', row='2')
-
-	# def getCrop(self):
-	# 	return dict({"xmin":int(self.xminEntry.get()), "xmax":int(self.xmaxEntry.get()), "ymin":int(self.yminEntry.get()), "ymax":int(self.ymaxEntry.get()), "zmin":int(self.zminEntry.get()), "zmax":int(self.zmaxEntry.get())})
-
-class LayerVisualizerContainer(ttk.Frame): #TODO add doc string
+class LayerVisualizerContainer(ttk.Frame): 
 	def __init__(self, master=None, **kw):
 		ttk.Frame.__init__(self, master, **kw)
 
@@ -476,24 +423,24 @@ class LayerVisualizerContainer(ttk.Frame): #TODO add doc string
 		firstVisualizerRow.grid(column='0', row='0')
 		self.LayerVisualizerRows.append(firstVisualizerRow)
 
-	def changeCallback(self): #Carefull if modifying, look for recursion due to passing self.changeCallback to constructor of LayerVisualizerRow
-		if len(self.LayerVisualizerRows) == 0: #Function may get called way to early by initializers
+	def changeCallback(self):
+		if len(self.LayerVisualizerRows) == 0: 
 			return
 
-		if self.LayerVisualizerRows[-1] == None: #Needed to stop Recursion, this none step is important
+		if self.LayerVisualizerRows[-1] == None: 
 			return
 
 		lastFilename = self.LayerVisualizerRows[-1].GetFile()
 		twoBackFilename = None
 
-		if len(self.LayerVisualizerRows) > 1: #If the list is long enough, get the second back filename in list
+		if len(self.LayerVisualizerRows) > 1: 
 			twoBackFilename = self.LayerVisualizerRows[-2].GetFile()
 
-		if (not twoBackFilename == None) and (twoBackFilename.strip() == lastFilename.strip()) and (lastFilename.strip() == ''): #If the last two are empty, get rid of the last row
+		if (not twoBackFilename == None) and (twoBackFilename.strip() == lastFilename.strip()) and (lastFilename.strip() == ''):
 			self.LayerVisualizerRows[-1].grid_forget()
 			del(self.LayerVisualizerRows[-1])
 
-		elif not lastFilename.strip() == '': #If the last row gets filled, create another row.
+		elif not lastFilename.strip() == '': 
 			newIndex = len(self.LayerVisualizerRows)
 			self.LayerVisualizerRows.append(None)
 			nextVisualizerRow = LayerVisualizerRow(master = self.frameToExpand, color = self.getSuggestedColor(newIndex), index=newIndex, changeCallback = self.changeCallback)
@@ -501,8 +448,6 @@ class LayerVisualizerContainer(ttk.Frame): #TODO add doc string
 			self.LayerVisualizerRows[-1] = nextVisualizerRow
 
 	def getSuggestedColor(self, index):
-		# https://sashamaps.net/docs/resources/20-colors/
-		# Using colors from above website at 99.99% accessability, removed white
 		colors = ['#ffe119', '#4363d8', '#f58231', '#dcbeff', '#800000', '#000075', '#a9a9a9', '#ffffff', '#000000']
 		if index < len(colors):
 			colorToReturn = colors[index]
@@ -600,7 +545,7 @@ class FileChooser(ttk.Frame):
 			filename = fd.asksaveasfilename(title=self.title)
 		elif self.mode == 'openMultiple':
 			filename = fd.askopenfilenames(title=self.title)
-			self.filepaths = filename #TODO check to make sure if you need to ast.literal_eval this or if it is already a list
+			self.filepaths = filename 
 		elif self.mode == 'folder':
 			filename = fd.askdirectory(title=self.title)
 		self.filepath = str(filename)
@@ -624,19 +569,6 @@ class MemoryStream(StringIO):
 
 	def write(self, string):
 		self.text = self.text + string
-
-# class TextboxStream(StringIO):
-# 	"""Replaced by MemoryStream, works a lot nicer with the threads. This was causing issues.
-# 	I did not delete it from the code, however I suggest never using this class
-# 	"""
-
-# 	def __init__(self, widget, maxLen = None):
-# 		super().__init__()
-# 		self.widget = widget
-
-# 	def write(self, string):
-# 		self.widget.insert("end", string)
-# 		self.widget.see('end')
 
 class ScrollableFrame(ttk.Frame):
 	"""Can be used like a regular tkinter frame, but has a scrollbar on the side

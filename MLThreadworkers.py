@@ -5,7 +5,7 @@ from dataManipulation import *
 from scipy.ndimage import grey_closing
 import shutil
 import glob
-from connectomics.config import * #TODO probably shouldn't import all
+from connectomics.config import *
 from connectomics.utils.process import binary_watershed,bc_watershed
 import yaml
 import torch.distributed as dist
@@ -43,19 +43,11 @@ def openNeuroGlancerThread(images, labels, labelToChange, scale=(20,20,20), mode
 	def ngLayer(data,res,oo=[0,0,0],tt='segmentation'):
 		return neuroglancer.LocalVolume(data,dimensions=res,volume_type=tt,voxel_offset=oo)
 
-	# global kill_neuroglancer #tried to use this to turn neuroglancer off, I don't think it's currently working
-	# kill_neuroglancer=False
-	# try:
-	# 	segThreshold=int(segThreshold)
-	# except:
-	# 	print("Error with SegThreshold, setting to 255/2")
-
-	ip = 'localhost' #or public IP of the machine for sharable display
-	port = 9999 #change to an unused port number
+	ip = 'localhost' 
+	port = 9999 
 	neuroglancer.set_server_bind_address(bind_address=ip,bind_port=port)
 	viewer=neuroglancer.Viewer()
 
-	# SNEMI (# 3d vol dim: z,y,x)
 	D0='./'
 	res = neuroglancer.CoordinateSpace(
 			names=['z', 'y', 'x'],
@@ -64,26 +56,11 @@ def openNeuroGlancerThread(images, labels, labelToChange, scale=(20,20,20), mode
 	if mode=='post':
 		im = imageio.volread(images)
 		with h5py.File(labels, 'r') as fl:
-			keys = list(fl.keys()) # get the keys and put them in a list
+			keys = list(fl.keys()) 
 			with viewer.txn() as s:
 				s.layers.append(name='images',layer=ngLayer(im,res,tt='image'))
 				gt = np.array(fl[keys[0]][0])
 				s.layers.append(name='masks',layer=ngLayer(gt,res,tt='segmentation'))
-				# s.layers.append(name='images',layer=ngLayer(im,res,tt='segmentation'))
-				# if len(keys)==1: # extract the datasetname automatically and apply to following visualization code
-					
-					# gt2 = np.array(fl[keys[0]][1])
-					# print('gt',gt.shape)
-					# print('gt2',gt2.shape)
-					# gt = gt/255.0
-					# s.layers.append(name='masks',layer=ngLayer(gt,res,tt='segmentation'))
-					# s.layers.append(name='masks2',layer=ngLayer(gt2,res,tt='image'))
-				# else:
-				# 	for planeIndex in range(1,fl['vol0'].shape[0]):
-				# 		planeTemp = np.array(fl['vol0'][planeIndex])
-				# 		planeTemp[planeTemp < segThreshold] = 0
-				# 		planeTemp[planeTemp != 0] = planeIndex
-				# 		s.layers.append(name='plane_' + str(planeIndex),layer=ngLayer(planeTemp,res,tt='segmentation'))
 	elif mode=='pre':
 		im = imageio.volread(images)
 		seg = imageio.volread(labels)
@@ -95,17 +72,11 @@ def openNeuroGlancerThread(images, labels, labelToChange, scale=(20,20,20), mode
 	labelToChange.configure(text=str(viewer))
 	labelToChange.bind("<Button-1>", lambda e: openURLcallback(str(viewer)))
 
-	# while(not kill_neuroglancer):
-	# 	time.sleep(2)
-
 def closeNeuroglancerThread():
 	global kill_neuroglancer
 	kill_neuroglancer=True
 
-# Machine Learning
-
 def combineChunks(chunkFolder, predictionName, outputFile, metaData=''):
-	#listOfFiles = [chunkFolder + sep + f for f in os.listdir(chunkFolder) if re.search(predictionName[:-3] + '_\\[[^\\]]*\\].h5', f)]
 	listOfFiles = [chunkFolder + sep + f for f in os.listdir(chunkFolder) if f[-3:] == '.h5']
 
 	globalXmax = 0
@@ -170,7 +141,7 @@ def redirect_argv(*args):
 	sys.argv = sys._argv
 
 def get_args():
-	"""Copied from pytorch_connectomics. #TODO import it instead
+	"""Copied from pytorch_connectomics.
 	"""
 
 	parser = argparse.ArgumentParser(description="Model Training & Inference")
@@ -186,7 +157,6 @@ def get_args():
 						help='node rank for distributed training', default=None)
 	parser.add_argument('--checkpoint', type=str, default=None,
 						help='path to load the checkpoint')
-	# Merge configs from command line (e.g., add 'SYSTEM.NUM_GPUS 8').
 	parser.add_argument(
 		"opts",
 		help="Modify config options using the command-line",
@@ -223,7 +193,6 @@ def get_args_modified(modifiedArgs):
 						help='node rank for distributed training', default=None)
 	parser.add_argument('--checkpoint', type=str, default=None,
 						help='path to load the checkpoint')
-	# Merge configs from command line (e.g., add 'SYSTEM.NUM_GPUS 8').
 	parser.add_argument(
 		"opts",
 		help="Modify config options using the command-line",
@@ -245,20 +214,12 @@ def trainFromMain(config):
 
 	args = get_args_modified(['--config-file', config])
 
-	# if args.local_rank == 0 or args.local_rank is None:
 	args.local_rank = None
 	print("Command line arguments: ", args)
 
-	# manual_seed = 0 if args.local_rank is None else args.local_rank
-	# np.random.seed(manual_seed)
-	# torch.manual_seed(manual_seed)
-
 	cfg = load_cfg(args)
-	# path = 
 
 	if args.local_rank == 0 or args.local_rank is None:
-		# In distributed training, only print and save the
-		# configurations using the node with local_rank=0.
 		print("PyTorch: ", torch.__version__)
 		print(cfg)
 
@@ -281,16 +242,12 @@ def trainFromMain(config):
 	cudnn.enabled = True
 	cudnn.benchmark = True
 
-	# mode = 'test' if args.inference else 'train' ###
 	mode = 'train'
 	trainer = Trainer(cfg, device, mode,
 					  rank=args.local_rank,
 					  checkpoint=args.checkpoint)
 
-	# Start training or inference:
 	if cfg.DATASET.DO_CHUNK_TITLE == 0:
-		# test_func = trainer.test_singly if cfg.INFERENCE.DO_SINGLY else trainer.test
-		# test_func() if args.inference else trainer.train()
 		print("RUNNING TRAIN")
 		trainer.train() 
 	else:
@@ -310,7 +267,6 @@ def predFromMain(config, checkpoint, metaData='', recombineChunks=False):
 	
 	checkpoint : str
 		The filepath in Data/models to the saved checkpoint of the model to use for prediction.
-		#TODO add a specific example here
 
 	metadata : str, optional
 		The string metadata of the model
@@ -322,17 +278,12 @@ def predFromMain(config, checkpoint, metaData='', recombineChunks=False):
 
 	args = get_args_modified(['--inference', '--checkpoint', checkpoint, '--config-file', config])
 
-	# if args.local_rank == 0 or args.local_rank is None:
 	args.local_rank = None
 
 	manual_seed = 0 if args.local_rank is None else args.local_rank
-	# np.random.seed(manual_seed)
-	# torch.manual_seed(manual_seed)
 
 	cfg = load_cfg(args)
 	if args.local_rank == 0 or args.local_rank is None:
-		# In distributed training, only print and save the
-		# configurations using the node with local_rank=0.
 		print("PyTorch: ", torch.__version__)
 		print(cfg)
 
@@ -341,44 +292,26 @@ def predFromMain(config, checkpoint, metaData='', recombineChunks=False):
 			os.makedirs(cfg.DATASET.OUTPUT_PATH)
 			save_all_cfg(cfg, cfg.DATASET.OUTPUT_PATH)
 
-	# if args.distributed:
-	# 	assert torch.cuda.is_available(), \
-	# 		"Distributed training without GPUs is not supported!"
-	# 	dist.init_process_group("nccl", init_method='env://')
-	# 	torch.cuda.set_device(args.local_rank)
-	# 	device = torch.device("cuda", args.local_rank)
-	# else:
-	# 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 	print("Rank: {}. Device: {}".format(args.local_rank, device))
 	cudnn.enabled = True
 	cudnn.benchmark = True
 
-	# mode = 'test' if args.inference else 'train'
 	mode = 'test'
 	trainer = Trainer(cfg, device, mode,
 					  rank=args.local_rank,
 					  checkpoint=args.checkpoint)
 
-	# Start training or inference:
 	if cfg.DATASET.DO_CHUNK_TITLE == 0:
 		test_func = trainer.test_singly if cfg.INFERENCE.DO_SINGLY else trainer.test
 		test_func() if args.inference else trainer.train()
-		# print("RUNNING TEST")
 	else:
 		trainer.run_chunk(mode)
 
 	print("Rank: {}. Device: {}. Process is finished!".format(
 		  args.local_rank, device))
 
-	# print('Recombine Chunks:', recombineChunks)
-	# if not recombineChunks:
-	# 	h = h5py.File(os.path.join(cfg["INFERENCE"]["OUTPUT_PATH"] + sep + cfg['INFERENCE']['OUTPUT_NAME'] + '.h5'),'a')
-	# 	h['vol0'].attrs['metadata'] = metaData
-	# 	h.close()
-
-#f is a an opened h5 file
 def InstanceSegmentProcessArray(f, cropDic, greyClosing=10, thres1=.85, thres2=.15, thres3=.8, thres_small=1000):
 	dataset = f['vol0']
 
@@ -529,9 +462,6 @@ def InstanceSegmentProcessing(inputH5Filename, greyClosing=10, thres1=.85, thres
 	h5out.attrs['countDictionary'] = str(countDic)
 	f.close()
 
-
-# Thread Workers
-
 def trainThreadWorker(cfg, stream):
 	"""Call this function as a seperate thread (or not if you want it to block) to train a model
 
@@ -581,7 +511,6 @@ def useThreadWorker(cfg, stream, checkpoint, metaData='', recombineChunks=False)
 
 	checkpoint : str
 		The filepath in Data/models to the saved checkpoint of the model to use for prediction.
-		#TODO add a specific example here
 
 	metadata : str, optional
 		The string metadata of the model
@@ -606,225 +535,20 @@ def useThreadWorker(cfg, stream, checkpoint, metaData='', recombineChunks=False)
 				metaData = ast.literal_eval(metaData)
 			configType = metaData['configType']
 
-			# if '2D' in configType or 'instance' in configType.lower() or recombineChunks:
-
 			with open(cfg,'r') as file:
 				config = yaml.load(file, Loader=yaml.FullLoader)
 
 			if 'semantic2d' in configType.lower():
 				print('Semantic 2D Post-Processing Required. Please click the button below to begin.')
-				# modelOutputFilePath=os.path.join(config["INFERENCE"]["OUTPUT_PATH"], config['INFERENCE']['OUTPUT_NAME'])
-				# f = h5py.File(modelOutputFilePath, "r")
-				# post_arr=np.array(f['vol0'])
-				# f.close()
-				# del f
-				# print('\n',post_arr.shape)
-				# post_arr=np.invert(post_arr)
-
-				# Recombine=[]
-				# for layer in post_arr[0]:
-				# 	new_layer=np.expand_dims(layer, axis=0)
-				# 	new_layer=binary_watershed(new_layer,thres1=0.8,thres2=0.85, thres_small=1024,seed_thres=35)
-				# 	# print(np.unique(new_layer))
-				# 	Recombine.append(new_layer)
-				
-				# post_arr=np.stack(Recombine, axis=0)
-				# del Recombine
-				# print('after combine',post_arr.shape)
-				# post_arr=np.expand_dims(post_arr, axis=0)
-				# print(post_arr.shape)
-				# # write and store
-				# writeH5(modelOutputFilePath+'_s2D_out',np.array(post_arr))
-				# del post_arr
-				# print("Finished Semantic2D Process! Please find the 'Model Output' with its original name + _s2D_out")
 			elif 'semantic3d' in configType.lower():
 				print('Semantic 3D Post-Processing Required. Please click the button below to begin.')
-				# modelOutputFilePath=os.path.join(config["INFERENCE"]["OUTPUT_PATH"], config['INFERENCE']['OUTPUT_NAME'])
-				# # open file
-				# f = h5py.File(modelOutputFilePath, "r")
-				# post_arr=np.array(f['vol0'][:2])
-				# f.close()
-				# del f
-				# print('\n',post_arr.shape)
-				# post_arr=np.invert(post_arr)
-
-				# post_arr=bc_watershed(post_arr,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=1024,seed_thres=35)
-				# post_arr=np.expand_dims(post_arr, axis=0)
-				# print(post_arr.shape)
-
-				# # write and store
-				# writeH5(modelOutputFilePath+'_s3D_out',np.array(post_arr))
-				# del post_arr
-				# print("Finished Semantic3D Process! Please find the 'Model Output' with its original name + _s3D_out")
 			elif 'instance2d' in configType.lower():
 				print('Instance 2D Post-Processing Required. Please click the button below to begin.')
-				# modelOutputFilePath=os.path.join(config["INFERENCE"]["OUTPUT_PATH"], config['INFERENCE']['OUTPUT_NAME'])
-				
-				# f = h5py.File(modelOutputFilePath, "r")
-				# post_arr=np.array(f['vol0'])
-				# f.close()
-				# del f
-				# print('\n',post_arr.shape)
-				
-				# Recombine=[]
-				# for layer in post_arr[0]:
-				# 	new_layer=np.expand_dims(layer, axis=0)
-				# 	new_layer=bc_watershed(new_layer,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=1024,seed_thres=35)
-				# 	# print(np.unique(new_layer))
-				# 	Recombine.append(new_layer)
-				
-				# post_arr=np.stack(Recombine, axis=0)
-				# del Recombine
-				# print('after combine',post_arr.shape)
-				# post_arr=np.expand_dims(post_arr, axis=0)
-				# print(post_arr.shape)
-				# # write and store
-				# writeH5(modelOutputFilePath+'_i2D_out',np.array(post_arr))
-				# del post_arr
-				# print("Finished Instance2D Process! Please find the 'Model Output' with its original name + _i2D_out")
 			elif 'instance3d' in configType.lower():
 				print('Instance 3D Post-Processing Required. Please click the button below to begin.')
-				# modelOutputFilePath=os.path.join(config["INFERENCE"]["OUTPUT_PATH"], config['INFERENCE']['OUTPUT_NAME'])
-				
-				# f = h5py.File(modelOutputFilePath, "r")
-				# post_arr=np.array(f['vol0'][:2])
-				# print(post_arr.dtype)
-				# f.close()
-				# del f
-				# print('\n',post_arr.shape)
-				# # watershed
-				# # from connectomics.utils.process import bcd_watershed
-				# # post_arr=bcd_watershed(post_arr,thres1=0.9, thres2=0.8, thres3=0.8, thres4=0.4, thres5=0.0, thres_small=128,seed_thres=35)
-				# post_arr=bc_watershed(post_arr,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=1024,seed_thres=32)
-				# post_arr=np.expand_dims(post_arr, axis=0)
-				# print(post_arr.shape)
-				# # split and store
-				# n=post_arr.shape[0]//100
-				# if n!=0:
-				# 	res=np.array_split(post_arr,n,axis=0)
-				# 	for i,a in enumerate(res):
-				# 		# print(i,a.shape)
-				# 		writeH5(modelOutputFilePath+'_i3D_out_'+str(i),a)
-				# else:
-				# 	writeH5(modelOutputFilePath+'_i3D_out_0',post_arr)
-					
-				# del post_arr
-				# print("Finished Instance Process! Please find the 'Model Output' with its original name + _i3D_out")
-				
-
-				# if 'instance' in configType.lower() and not '2D' in configType and not recombineChunks: #3D instance, all in memory
-				# 	print('3D Instance Post-Processing')
-				# 	outputFile = os.path.join(config["INFERENCE"]["OUTPUT_PATH"], config['INFERENCE']['OUTPUT_NAME'])
-				# 	print('OutputFile:',outputFile)
-				# 	InstanceSegmentProcessing(outputFile, greyClosing=10, thres1=.85, thres2=.15, thres3=.8, thres_small=100, cubeSize=1000)
-				# 	print('Completely done, output is saved in', outputFile)
-				# elif not '2D' in configType and recombineChunks:
-				# 	print('Path, outputName', config["INFERENCE"]["OUTPUT_PATH"], config["INFERENCE"]["OUTPUT_NAME"])
-				# 	outputPath = config["INFERENCE"]["OUTPUT_PATH"]
-				# 	outputName = config["INFERENCE"]["OUTPUT_NAME"]
-				# 	newOutputName = outputPath[:outputPath.rindex(sep) + 1] + outputName
-				# 	combineChunks(outputPath, outputName, newOutputName, metaData=metaData)
-				# 	shutil.rmtree(outputPath)
-					
-				# 	if 'instance' in configType.lower():
-				# 		print('Starting Instance Post-Processing')
-				# 		InstanceSegmentProcessing(newOutputName, greyClosing=10, thres1=.85, thres2=.15, thres3=.8, thres_small=100, cubeSize=1000)						
-				# 	elif 'semantic' in configType.lower():
-				# 		pass
-
-				# 	print('Completely done, output is saved in', newOutputName)
-				# elif '2D' in configType and not 'instance' in configType.lower(): #Semantic 2D
-				# 	outputPath = config["INFERENCE"]["OUTPUT_PATH"]
-				# 	outputName = config["INFERENCE"]["OUTPUT_NAME"]
-				# 	newOutputName = outputPath[:outputPath.rindex(sep) + 1] + outputName
-				# 	toCombineFileList = list(sorted(glob.glob(outputPath + sep + outputName[:-3] + '_*.h5')))
-				# 	numFiles = len(toCombineFileList)
-
-				# 	h5f = h5py.File(toCombineFileList[0], 'r')
-				# 	d = h5f['vol0'][:]
-				# 	h5f.close()
-				# 	numPlanes = d.shape[0]
-				# 	width = d.shape[3]
-				# 	height = d.shape[2]
-				# 	del(d)
-
-				# 	newH5 = h5py.File(newOutputName, 'w')
-				# 	newH5.create_dataset('vol0', (numPlanes, numFiles, height, width), dtype=np.uint8)
-				# 	dataset = newH5['vol0']
-
-				# 	for index, file in enumerate(toCombineFileList):
-				# 		h5f = h5py.File(file, 'r')
-				# 		d = h5f['vol0'][:]
-				# 		h5f.close()
-				# 		d = d.squeeze()
-				# 		dataset[:,index,:,:] = d
-
-				# 	newH5['vol0'].attrs['metadata'] = str(metaData)
-				# 	newH5.close()
-				# 	shutil.rmtree(outputPath)
-				# elif '2D' in configType and 'instance' in configType.lower():
-				# 	outputPath = config["INFERENCE"]["OUTPUT_PATH"]
-				# 	outputName = config["INFERENCE"]["OUTPUT_NAME"]
-				# 	newOutputName = outputPath[:outputPath.rindex(sep) + 1] + outputName
-				# 	toCombineFileList = list(sorted(glob.glob(outputPath + sep + outputName[:-3] + '_*.h5')))
-				# 	numFiles = len(toCombineFileList)
-
-				# 	h5f = h5py.File(toCombineFileList[0], 'r')
-				# 	d = h5f['vol0'][:]
-				# 	h5f.close()
-				# 	numPlanes = d.shape[0]
-				# 	width = d.shape[3]
-				# 	height = d.shape[2]
-				# 	del(d)
-
-				# 	newH5 = h5py.File(newOutputName, 'w')
-				# 	newH5.create_dataset('vol0', (numPlanes, numFiles, height, width), dtype=np.uint8)
-				# 	dataset = newH5['vol0']
-
-				# 	for index, file in enumerate(toCombineFileList): #Put Raw Data into H5
-				# 		h5f = h5py.File(file, 'r')
-				# 		d = h5f['vol0'][:]
-				# 		h5f.close()
-				# 		d = d.squeeze()
-				# 		dataset[:,index,:,:] = d
-
-				# 	newH5['vol0'].attrs['metadata'] = str(metaData)
-
-				# 	#Process Instance and put under processed
-				# 	newH5.create_dataset('processed', (numFiles, height, width), dtype=np.uint16)
-				# 	dataset = newH5['processed']
-				# 	for index, file in enumerate(toCombineFileList):
-				# 		h5f = h5py.File(file, 'r')
-				# 		d = h5f['vol0'][:]
-				# 		h5f.close()
-				# 		d = d.squeeze()
-				# 		greyClosing = 10
-				# 		thres1=.9  
-				# 		thres2=.8	
-				# 		thres3=.85	
-				# 		thres_small=1
-				# 		#d[0] = grey_closing(d[0], size=(greyClosing,greyClosing))
-				# 		d = bc_watershed(d, thres1=thres1, thres2=thres2, thres3=thres3, thres_small=thres_small)
-				# 		dataset[index] = d
-
-				# 	newH5['processed'].attrs['metadata'] = str(metaData)
-				# 	newH5.close()
-				# 	shutil.rmtree(outputPath)
-
-				# print('All Post-process are Completely Finished')
 		except:
 			print('Critical Error')
 			traceback.print_exc()
-
-# def trainThreadWorkerCluster(cfg, stream, button, url, username, password, trainStack, trainLabels, submissionScriptString, folderToUse, pytorchFolder, submissionCommand):
-# 	"""Will train within a server instead of the local computer
-# 	#TODO should be in Remote.py, check to see if it is safe to move
-# 	"""
-
-# 	with redirect_stdout(stream):
-# 		with redirect_stderr(stream):
-# 			runRemoteServer(url, username, password, trainStack, trainLabels, configToUse, submissionScriptString, folderToUse, pytorchFolder, submissionCommand)
-# 	button['state'] = 'normal'
 
 def ImageToolsCombineImageThreadWorker(pathToCombine, outputFile, streamToUse):
 	"""Combines a folder with a stack of images into one .tif, .json, or .txt dataset
@@ -908,7 +632,7 @@ def OutputToolsGetStatsThreadWorker(h5path, streamToUse, outputFile, cropBox = [
 				cropped = True
 
 			print('Loading H5 File')
-			h5f = h5py.File(h5path, 'r') #TODO make sure file is always closed properly using with:
+			h5f = h5py.File(h5path, 'r') 
 
 			imageIndexList = []
 			planeIndexList = []
@@ -923,16 +647,6 @@ def OutputToolsGetStatsThreadWorker(h5path, streamToUse, outputFile, cropBox = [
 			dictt['Instance ID']=IDlist
 			dictt['Area(in pixel)']=[]
 
-			# imageIndexList = []
-			# for i in range(dataset.shape[0]):
-			# 	dFile = dataset[i]
-			# 	for id in IDList:
-			# 		temp_lst=[]
-			# 		if unique == 0:
-			# 			continue
-			# 		imageIndexList.append(i)
-			# 		temp_lst.append(np.count_nonzero(dFile == id))
-
 			for id in IDlist:
 				dictt['Area(in pixel)'].append(np.count_nonzero(dataset == id))
 		
@@ -942,12 +656,6 @@ def OutputToolsGetStatsThreadWorker(h5path, streamToUse, outputFile, cropBox = [
 
 			print()
 			print('==============================')
-			# print()
-			# print('H5File Raw Counts')
-			# print()
-			# print(sorted(countList))
-			# print()
-			# print('==============================')
 			print()
 			print('Instance Stats')
 			print('Min:', min(df['Area(in pixel)']))
@@ -963,7 +671,7 @@ def OutputToolsGetStatsThreadWorker(h5path, streamToUse, outputFile, cropBox = [
 			print('Critical Error:')
 			traceback.print_exc()
 
-def VisualizeThreadWorker(filesToVisualize, streamToUse, voxel_size=1): #TODO check to see if this could be removed. It is replaced by the new visualizationGUI.py
+def VisualizeThreadWorker(filesToVisualize, streamToUse, voxel_size=1): 
 	with redirect_stdout(streamToUse):
 		try:
 			geometries_to_draw = []
@@ -988,16 +696,7 @@ def VisualizeThreadWorker(filesToVisualize, streamToUse, voxel_size=1): #TODO ch
 				else: #Unknown Filetype
 					pass
 
-			# visWindow = o3d.visualization.Visualizer()
-			# visWindow.create_window()
-			# for geometry in geometries_to_draw:
-			# 	visWindow.add_geometry(geometry)
-			# visWindow.draw()
-
 			o3d.visualization.draw(geometries_to_draw, 'Visualization Window')
-
-			#o3d.visualization.draw_geometries(geometries_to_draw)
-
 		except:
 			print('Critical Error:')
 			traceback.print_exc()
@@ -1034,7 +733,6 @@ def OutputToolsMakeGeometriesThreadWorker(h5path, makeMeshs, makePoints, streamT
 			print('Loading H5 File')
 			h5f = h5py.File(h5path, 'r')
 
-			# metadata = {'configType':'instance.yaml'}
 			metadata = ast.literal_eval(h5f['vol0'].attrs['metadata'])
 			configType = metadata['configType'].lower()
 			outputFilenameShort = h5path[:-3]

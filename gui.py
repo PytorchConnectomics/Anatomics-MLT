@@ -1,15 +1,3 @@
-"""
-
-https://wiki.tcl-lang.org/page/List+of+ttk+Themes
-adapta is liked
-aqua is ok
-
-"""
-
-#######################################
-# Imports                             #
-#######################################
-
 from utils import *
 from MLThreadworkers import *
 from Remote import *
@@ -41,30 +29,6 @@ defaultMatplotlibBackend = mpl.get_backend()
 defaultMatplotlibBackend = 'TkAgg'
 from matplotlib import pyplot as plt
 
-#######################################
-# Main Application Class              #
-####################################### 
-# def rgb_to_seg(seg):
-# 	# convert to 24 bits
-# 	if seg.ndim == 2 or seg.shape[-1] == 1:
-# 		return np.squeeze(seg)
-# 	elif seg.ndim == 3:  # 1 rgb image
-# 		if (seg[:, :, 1] != seg[:, :, 2]).any() or (
-# 			seg[:, :, 0] != seg[:, :, 2]
-# 		).any():
-# 			return (
-# 				seg[:, :, 0].astype(np.uint32) * 65536
-# 				+ seg[:, :, 1].astype(np.uint32) * 256
-# 				+ seg[:, :, 2].astype(np.uint32)
-# 			)
-# 		else:  # gray image saved into 3-channel
-# 			return seg[:, :, 0]
-# 	elif seg.ndim == 4:  # n rgb image
-# 		return (
-# 			seg[:, :, :, 0].astype(np.uint32) * 65536
-# 			+ seg[:, :, :, 1].astype(np.uint32) * 256
-# 			+ seg[:, :, :, 2].astype(np.uint32)
-# 		)
 		
 def writeH5(filename, dtarray, datasetname='vol0'): 
 	fid=h5py.File(filename,'w')
@@ -85,8 +49,6 @@ class TabguiApp():
 
 		self.tabHolder = ttk.Notebook(self.root,height=700)
 		self.tabHolder.pack(fill='none',padx=3,pady=3,ipadx=1,ipady=1,side='top')
-
-		##########################################################################################################
 
 		self.frameDatacheck = ttk.Frame(self.tabHolder)
 
@@ -120,7 +82,6 @@ class TabguiApp():
 
 		self.tabHolder.add(self.frameDatacheck, text="Data Check")
 
-		##########################################################################################################
 
 		self.frameTrainMaster = ttk.Frame(self.tabHolder)
 		
@@ -129,23 +90,13 @@ class TabguiApp():
 
 		self.frameTrain = ttk.Frame(canvas)
 		
-		# self.frameTrain.grid(row=0, column=0)
-		vsb.pack(side="right", fill="y")                                       #pack scrollbar to right of self
-		canvas.pack(side="left", fill="both", expand=True)                     #pack canvas to left of self and expand to fil
+		vsb.pack(side="right", fill="y")                                      
+		canvas.pack(side="left", fill="both", expand=True)               
 		canvas.create_window((0, 0), window=self.frameTrain,anchor='nw')
-
 		canvas.configure(yscrollcommand=vsb.set)
-
-		# self.frameTrainMaster.grid_rowconfigure(0, weight=1)
-		# self.frameTrainMaster.grid_columnconfigure(0, weight=1)
-
 		def on_mousewheel(event):
 			canvas.yview_scroll(-1*(event.delta//120), "units")
 		canvas.bind_all("<MouseWheel>", on_mousewheel)
-
-		# def on_canvas_configure(event):
-		# 	canvas.itemconfig(self.frameTrain, width=event.width)
-		# canvas.bind("<Configure>", on_canvas_configure)
 
 		def on_frame_configure(event):
 			canvas.configure(scrollregion=canvas.bbox("all"))
@@ -294,7 +245,6 @@ class TabguiApp():
 
 		self.tabHolder.add(self.frameTrainMaster, text='Train')
 
-		#######################################################################################
 
 		self.framePredict = ttk.Frame(self.tabHolder)
 
@@ -399,9 +349,6 @@ class TabguiApp():
 
 		self.tabHolder.add(self.framePredict, text='Auto Label')
 
-		##################################################################################################################
-		# Section Image Tools
-		##################################################################################################################
 
 		self.frameImage = ttk.Frame(self.tabHolder)
 
@@ -441,7 +388,6 @@ class TabguiApp():
 
 		self.tabHolder.add(self.frameImage, text='Image Tools')
 
-		##################################################################################################################
 
 		self.frameOutputTools = ttk.Frame(self.tabHolder)
 
@@ -498,13 +444,8 @@ class TabguiApp():
 		self.textOutputOutput.insert('0.0', _text_)
 		self.textOutputOutput.grid(column='0',columnspan='2',row='9',padx=5,pady=5,sticky='nsew')
 
-		# self.textOutputOutputseparator = ttk.Separator(self.frameOutputTools)
-		# self.textOutputOutputseparator.configure(orient='horizontal')
-		# self.textOutputOutputseparator.grid(column='0', columnspan='2',row='10',sticky="ew")
-
 		self.tabHolder.add(self.frameOutputTools, text='Output Tools')
 
-		#####################################################
 
 		self.frameNeuroGlancer = ttk.Frame(self.tabHolder)
 
@@ -548,17 +489,6 @@ class TabguiApp():
 		self.entryNeuroZ.configure()
 		self.entryNeuroZ.grid(column='1', row='4',sticky='ew')
 
-		# self.labelSegmentationThreshold = ttk.Label(self.frameNeuroGlancer)
-		# self.labelSegmentationThreshold.configure(text='Segmentation Threshold(1-255): ')
-		# self.labelSegmentationThreshold.grid(column='0', row='5',sticky='ew')
-
-		# _text_ = '''255'''
-		# self.entrySegmentationThreshold = ttk.Entry(self.frameNeuroGlancer)
-		# self.entrySegmentationThreshold.delete('0', 'end')
-		# self.entrySegmentationThreshold.insert('0', _text_)
-		# self.entrySegmentationThreshold.configure()
-		# self.entrySegmentationThreshold.grid(column='1', row='5',sticky='ew')
-
 		self.labelNeuroglancerURL = ttk.Label(self.frameNeuroGlancer, foreground="blue", cursor="hand2")
 		self.labelNeuroglancerURL.configure(text="")
 		self.labelNeuroglancerURL.grid(column="0", row="6", columnspan="2")
@@ -568,25 +498,16 @@ class TabguiApp():
 		self.buttonNeuroOpen.grid(column='0', row='7', columnspan="2")
 		self.buttonNeuroOpen.configure(command=self.openNeuroGlancer2)
 
-		# self.buttonNeuroClose = ttk.Button(self.frameNeuroGlancer)
-		# self.buttonNeuroClose.configure(text="Close Neuroglancer (Doesn't really work yet)", state="disabled")
-		# self.buttonNeuroClose.grid(column='0', row='12', columnspan="2")
-		# self.buttonNeuroClose.configure(command=self.closeNeuroGlancer)
-
 		self.frameNeuroGlancer.grid_columnconfigure(0, weight=1)
 		self.frameNeuroGlancer.grid_columnconfigure(1, weight=1)
 
 		self.tabHolder.add(self.frameNeuroGlancer, text="Neuroglancer")
-
-		#####################################################
 
 		print("Width x Height", master.winfo_width(), 'x', master.winfo_height())
 
 	def openNeuroGlancer1(self):
 		imagefilepath=self.pathchooserinputDataImages.entry.get()
 		modelOutputFilePath=self.pathchooserinputDataLabel.entry.get()
-		
-		# crop = self.neuroGlancerCrop.getCrop()
 		self.neuroglancerThread = threading.Thread(target=openNeuroGlancerThread, args=(imagefilepath, modelOutputFilePath, self.labelDataglancerURL,(1,1,1),'pre'))
 		self.neuroglancerThread.setDaemon(True)
 		self.neuroglancerThread.start()
@@ -597,15 +518,12 @@ class TabguiApp():
 		x = int(self.entryNeuroX.get())
 		y = int(self.entryNeuroY.get())
 		z = int(self.entryNeuroZ.get())
-		
-		# crop = self.neuroGlancerCrop.getCrop()
-		# segThreshold = int(self.entrySegmentationThreshold.get())
+
 		self.neuroglancerThread = threading.Thread(target=openNeuroGlancerThread, args=(imagefilepath, modelOutputFilePath, self.labelNeuroglancerURL,(z,y,x),'post'))
 		self.neuroglancerThread.setDaemon(True)
 		self.neuroglancerThread.start()
 
 	def semantic2dProcessor(self):
-		# Prepare semantic 2d Processing for Neuroglancer
 		modelOutputFilePath=self.pathChooserUseOutputFile.entry.get()
 		f = h5py.File(modelOutputFilePath, "r")
 		post_arr=np.array(f['vol0'])
@@ -614,12 +532,10 @@ class TabguiApp():
 		print('\n',post_arr.shape)
 		post_arr=np.invert(post_arr)
 
-		# watershed
 		Recombine=[]
 		for layer in post_arr[0]:
 			new_layer=np.expand_dims(layer, axis=0)
 			new_layer=binary_watershed(new_layer,thres1=0.8,thres2=0.85, thres_small=1024,seed_thres=35)
-			# print(np.unique(new_layer))
 			Recombine.append(new_layer)
 		
 		post_arr=np.stack(Recombine, axis=0)
@@ -627,33 +543,27 @@ class TabguiApp():
 		print('after combine',post_arr.shape)
 		post_arr=np.expand_dims(post_arr, axis=0)
 		print(post_arr.shape)
-		# write and store
 		writeH5(modelOutputFilePath+'_s2D_out',np.array(post_arr))
 		del post_arr
 		print("Finished Semantic2D Process! Please find the 'Model Output' with its original name + _s2D_out")
 
 	def semantic3dProcessor(self):  
-		# Prepare semantic 3d Processing for Neuroglancer
 		modelOutputFilePath=self.pathChooserUseOutputFile.entry.get()
-		# open file
 		f = h5py.File(modelOutputFilePath, "r")
 		post_arr=np.array(f['vol0'][:2])
 		f.close()
 		del f
 		print('\n',post_arr.shape)
-		# post_arr=np.invert(post_arr)
 
 		post_arr=bc_watershed(post_arr,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=1024,seed_thres=35)
 		post_arr=np.expand_dims(post_arr, axis=0)
 		print(post_arr.shape)
 
-		# write and store
 		writeH5(modelOutputFilePath+'_s3D_out',np.array(post_arr))
 		del post_arr
 		print("Finished Semantic3D Process! Please find the 'Model Output' with its original name + _s3D_out")
 
 	def instance2dProcessor(self):
-		# Prepare Instance 3D Processing for Neuroglancer
 		modelOutputFilePath=self.pathChooserUseOutputFile.entry.get()
 		
 		f = h5py.File(modelOutputFilePath, "r")
@@ -661,12 +571,10 @@ class TabguiApp():
 		f.close()
 		del f
 		print('\n',post_arr.shape)
-		# watershed
 		Recombine=[]
 		for layer in post_arr[0]:
 			new_layer=np.expand_dims(layer, axis=0)
 			new_layer=bc_watershed(new_layer,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=1024,seed_thres=35)
-			# print(np.unique(new_layer))
 			Recombine.append(new_layer)
 		
 		post_arr=np.stack(Recombine, axis=0)
@@ -674,13 +582,11 @@ class TabguiApp():
 		print('after combine',post_arr.shape)
 		post_arr=np.expand_dims(post_arr, axis=0)
 		print(post_arr.shape)
-		# write and store
 		writeH5(modelOutputFilePath+'_i2D_out',np.array(post_arr))
 		del post_arr
 		print("Finished Instance2D Process! Please find the 'Model Output' with its original name + _i2D_out")
 
 	def instance3dProcessor(self):  
-		# Prepare Instance 3D Processing for Neuroglancer
 		modelOutputFilePath=self.pathChooserUseOutputFile.entry.get()
 		
 		f = h5py.File(modelOutputFilePath, "r")
@@ -688,44 +594,19 @@ class TabguiApp():
 		f.close()
 		del f
 		print('\n',post_arr.shape)
-		# post_arr=np.invert(post_arr)
-
-		# post_arr=bc_watershed(post_arr,thres1=0.9,thres2=0.8,thres3=0.8,thres_small=128,seed_thres=32,remove_small_mode='background')
 		post_arr = bc_watershed(post_arr, thres1=0.85, thres2=0.6, thres3=0.8, thres_small=1024)
 		print(post_arr.shape)
-		# # write and store
 		writeH5(modelOutputFilePath+'_i3D_out',np.expand_dims(post_arr, axis=0))
 		del post_arr
 		print("Finished Instance Process! Please find the 'Model Output' with its original name + _i3D_out")
 
 	def closeNeuroGlancer(self):
 		self.labelNeuroglancerURL.configure(text="")
-		# MLThreadworkers.kill_neuroglancer=True
 		closeNeuroglancerThread()
-
-	# def trainUseClusterCheckboxPress(self):
-	# 	status = self.checkbuttonTrainClusterRun.instate(['selected'])
-	# 	if status == True:
-	# 		status = 'normal'
-	# 	else:
-	# 		status = 'disabled'
-	# 	self.entryTrainClusterURL['state'] = status
-	# 	self.entryTrainClusterUsername['state'] = status
-	# 	self.entryTrainClusterPassword['state'] = status
-	# 	self.buttonTrainCheckCluster['state'] = status
 
 	def visualizeOpenButtonPress(self):
 		from visualizationGUI import runVisualizationWindow
 		runVisualizationWindow()
-
-	# def VisualizeButtonPress(self):
-	# 	self.buttonVisualize['state'] = 'disabled'
-	# 	filesToVisualize = self.visualizeRowsHolder.getFiles()
-	# 	memStream = MemoryStream()
-	# 	t = threading.Thread(target=VisualizeThreadWorker, args=(filesToVisualize, memStream, 5))
-	# 	t.setDaemon(True)
-	# 	t.start()
-	# 	self.longButtonPressHandler(t, memStream, self.textVisualizeOutput, [self.buttonVisualize])
 
 	def longButtonPressHandler(self, thread, memStream, textBox, listToReEnable, refreshTime=1000):
 		textBox.delete(1.0,"end")
@@ -746,18 +627,6 @@ class TabguiApp():
 			labels = self.pathChooserTrainLabels.entry.get()
 
 			configToUse = self.configChooserVariable.get() 	
-			# print(configToUse.lower()+' model in training')
-			# if 'semantic' in configToUse.lower(): # do not touch the original dataset
-			# 	pass
-			# elif 'instance' in configToUse.lower():
-			# 	pass
-				# seg_label_preprocess=skio.imread(labels)
-				# seg_label_preprocess=label2rgb(seg_label_preprocess)
-				# print(seg_label_preprocess.shape)
-				# print(np.unique(seg_label_preprocess))
-				# seg_label_preprocess=rgb_to_seg(seg_label_preprocess)
-				# print(np.unique(seg_label_preprocess))
-				# print(labels)
 
 			sizex = int(self.entryTrainX.get())
 			sizey = int(self.entryTrainY.get())
@@ -773,11 +642,7 @@ class TabguiApp():
 			windowSize = self.entryWindowSize.get()
 
 			name = self.entryTrainModelName.get()
-			# cluster = self.checkbuttonTrainClusterRun.instate(['selected'])
 			cluster=0
-
-			# if isdir('Data' + sep + 'models' + sep + name):
-			# 	pass #TODO Check if want to continue, if so get latest checkpoint
 
 			with open('Data' + sep + 'configs' + sep + configToUse,'r') as file:
 				config = yaml.load(file, Loader=yaml.FullLoader)
@@ -786,7 +651,7 @@ class TabguiApp():
 			config['SYSTEM']['NUM_GPUS'] = gpuNum
 			config['SYSTEM']['NUM_CPUS'] = cpuNum
 
-			config['MODEL']['INPUT_SIZE'] = [int(s) for s in windowSize.split(',')] #have to create object for each
+			config['MODEL']['INPUT_SIZE'] = [int(s) for s in windowSize.split(',')]
 			config['MODEL']['OUTPUT_SIZE'] = [int(s) for s in windowSize.split(',')]
 			config['INFERENCE']['INPUT_SIZE'] = [int(s) for s in windowSize.split(',')]
 			config['INFERENCE']['OUTPUT_SIZE'] = [int(s) for s in windowSize.split(',')]
@@ -799,24 +664,6 @@ class TabguiApp():
 			config['SOLVER']['ITERATION_SAVE'] = itSave
 			config['SOLVER']['ITERATION_TOTAL'] = int(itTotal) + 1
 			config['SOLVER']['SAMPLES_PER_BATCH'] = samples
-
-			# 	weightsToUse = []
-			# 	weights = list(getWeightsFromLabels(labels))
-			# 	for weight in weights:
-			# 		weightsToUse.append(float(weight))
-
-			# 	config['MODEL']['TARGET_OPT'] = ['9-' + str(len(weights))] #Target Opt
-			# 	config['MODEL']['OUT_PLANES'] = len(weights) #Output Planes
-			# 	config['MODEL']['LOSS_KWARGS_VAL'] = list([[[weightsToUse]]]) #Class Weights
-
-			# if image[-5:] == '.json':
-			# 	chunkSize = 1000
-			# 	with open(image, 'r') as fp:
-			# 		jsonData = json.load(fp)
-
-			# 	config['DATASET']['DO_CHUNK_TITLE'] = 1
-			# 	config['DATASET']['DATA_CHUNK_NUM'] = [max(1,int(jsonData['depth']/chunkSize + .5)), max(1,int(jsonData['height']/chunkSize + .5)), max(1,int(jsonData['width']/chunkSize + .5))] # split the large volume into chunks [z,y,x order]
-			# 	config['DATASET']['DATA_CHUNK_ITER'] = int( int(itTotal) / int(np.prod(config['DATASET']['DATA_CHUNK_NUM'])) ) # (training) number of iterations for a chunk which is iterations / number of chunks
 
 			if not isdir('Data' + sep + 'models' + sep + name):
 				mkdir('Data' + sep + 'models' + sep + name)
@@ -840,34 +687,11 @@ class TabguiApp():
 				t.setDaemon(True)
 				t.start()
 				self.longButtonPressHandler(t, memStream, self.textTrainOutput, [self.buttonTrainTrain])
-
-			# else:
-			# 	url = self.entryTrainClusterURL.get()
-			# 	username = self.entryTrainClusterUsername.get()
-			# 	password = self.entryTrainClusterPassword.get()
-			# 	submissionScriptString = getSubmissionScriptAsString('configServer2.yaml','20gb','00:10:00','configServer2.yaml','output')
-			# 	t = threading.Thread(target=trainThreadWorkerCluster, args=(cfg, self.textTrainOutputStream, self.buttonTrainTrain, url, username, password, image, labels, submissionScriptString, 'projects/pytorch_connectomics', 'projects/pytorch_connectomics', 'sbatch submissionScript.sb'))
-			# 	# cfg, stream, button, url, username, password, trainStack, trainLabels, submissionScriptString, folderToUse, pytorchFolder, submissionCommand
-			# 	t.setDaemon(True)
-			# 	t.start()
 		except:
 			self.buttonTrainTrain['state'] = 'normal'
 			traceback.print_exc()
 
-	# def trainCheckClusterButtonPress(self):
-	# 	pass
-
-	# def UseModelUseClusterCheckboxPress(self):
-	# 	status = self.checkbuttonUseCluster.instate(['selected'])
-	# 	if status == True:
-	# 		status = 'normal'
-	# 	else:
-	# 		status = 'disabled'
-	# 	self.entryUseClusterURL['state'] = status
-	# 	self.entryUseClusterUsername['state'] = status
-	# 	self.entryUseClusterPassword['state'] = status
-
-	def getConfigForModel(self, model): ###
+	def getConfigForModel(self, model): 
 		return "Data" + sep + "models" + sep + model + sep + "config.yaml" 
 
 	def getLastCheckpointForModel(self, model):
@@ -883,7 +707,6 @@ class TabguiApp():
 				raise Exception(subFile, 'file unable to be parsed in getLastCheckpointForModel')
 			if checkpointNumber > biggestCheckpoint:
 				biggestCheckpoint = checkpointNumber
-			#print('biggest checkpoint',biggestCheckpoint)
 		biggestCheckpoint = 'Data' + sep + 'models' + sep + model + sep + 'checkpoint_' + str(biggestCheckpoint).zfill(5) + '.pth.tar'
 		return biggestCheckpoint
 
@@ -899,7 +722,6 @@ class TabguiApp():
 		self.buttonUseLabel['state'] = 'disabled'
 		recombine = False
 		try:
-			# cluster = self.checkbuttonUseCluster.instate(['selected'])
 			cluster = 0
 			model = self.modelChooserVariable.get()
 			gpuNum = int(self.numBoxTrainGPU.get())
@@ -911,12 +733,11 @@ class TabguiApp():
 			padSize = self.entryUsePadSize.get()
 			padSize = [int(s) for s in padSize.split(',')]
 			augMode = self.entryUseAugMode.get()
-			augNum = 'None' #self.entryUseAugNum.get()
+			augNum = 'None'
 			stride = self.entryUseStride.get()
 			stride = [int(s) for s in stride.split(',')]
 
 			configToUse = self.getConfigForModel(model)
-			# print('Config to use:', configToUse)
 			with open(configToUse,'r') as file:
 				config = yaml.load(file, Loader=yaml.FullLoader)
 				file.close()
@@ -929,23 +750,6 @@ class TabguiApp():
 			if not outputName.split('.')[-1] == 'h5':
 				outputName += '.h5'
 
-			# if image[-5:] == '.json': #Means the dataset is chunked and needs to be recombined at the end
-			# 	recombine = True
-			# 	chunkSize = 1000
-			# 	with open(image, 'r') as fp:
-			# 		jsonData = json.load(fp)
-
-			# 	config['DATASET']['DO_CHUNK_TITLE'] = 1
-			# 	config['DATASET']['DATA_CHUNK_NUM'] = [max(1,int(jsonData['depth']/chunkSize + .5)), max(1,int(jsonData['height']/chunkSize + .5)), max(1,int(jsonData['width']/chunkSize + .5))] # split the large volume into chunks [z,y,x order]
-
-			# if image[-4:] == '.txt': #Means the dataset is 2D and needs to be recombined at the end
-			# 	recombine = True
-			
-			# if recombine:
-			# 	outputPath = outputPath + sep + model + '_tempOutputChunks_' + str(random.randint(1, 9999))
-
-			# print(outputPath)
-
 			config['INFERENCE']['OUTPUT_PATH'] = outputPath
 			config['INFERENCE']['OUTPUT_NAME'] = outputName
 			config['INFERENCE']['IMAGE_NAME'] = image
@@ -955,15 +759,11 @@ class TabguiApp():
 			config['INFERENCE']['AUG_NUM'] = augNum
 			config['INFERENCE']['PAD_SIZE'] = padSize
 
-			# if not outputPath[-1] == sep:
-			# 	outputPath += sep
-
 			with open('temp.yaml','w') as file:
 				yaml.dump(config, file)
 				file.close()
 
 			if cluster==0:
-				# print('Starting Non Cluster')				
 				biggestCheckpoint = self.getLastCheckpointForModel(model)
 				metaData = self.getMetadataForModel(model)
 				memStream = MemoryStream()
@@ -971,103 +771,9 @@ class TabguiApp():
 				t.setDaemon(True)
 				t.start()
 				self.longButtonPressHandler(t, memStream, self.textUseOutput, [self.buttonUseLabel])
-			# else:
-			# 	url = self.entryTrainClusterURL.get()
-			# 	username = self.entryTrainClusterUsername.get()
-			# 	password = self.entryTrainClusterPassword.get()
-			# 	submissionScriptString = getSubmissionScriptAsString('configServer2.yaml','20gb','00:10:00','configServer2.yaml','output')
-			# 	t = threading.Thread(target=useThreadWorkerCluster, args=(cfg, self.textUseOutputStream, self.buttonUseLabel, url, username, password, image, labels, submissionScriptString, 'projects/pytorch_connectomics', 'projects/pytorch_connectomics', 'sbatch submissionScript.sb'))
-			# 	# cfg, stream, button, url, username, password, trainStack, trainLabels, submissionScriptString, folderToUse, pytorchFolder, submissionCommand
-			# 	t.setDaemon(True)
-			# 	t.start()
 		except:
 			traceback.print_exc()
 			self.buttonUseLabel['state'] = 'normal'
-
-	# def EvaluateModelCompareImagesButtonPress(self):
-	# 	imageStack = self.pathchooserinputEvaluateImages.entry.get()
-	# 	predStack = self.pathchooserinputEvaluateModelOutput.entry.get()
-	# 	metadata = getMetadataForH5(predStack)
-	# 	if 'semantic' in metadata['configType'].lower():
-	# 		create2DLabelCheckSemantic(imageStack, predStack, 5)
-	# 	elif 'instance' in metadata['configType'].lower():
-	# 		create2DLabelCheckInstance(imageStack, predStack, 5)
-
-	# def EvaluateModelIdentifyPlanesButtonPress(self):
-	# 	currentMatlobBackend = mpl.get_backend()
-	# 	mpl.use('TkAgg')
-	# 	imageStack = self.pathchooserinputEvaluateImages.entry.get()
-	# 	predStackFilename = self.pathchooserinputEvaluateModelOutput.entry.get()
-
-	# 	predStack = h5py.File(predStackFilename, 'r')['vol0']
-	# 	numPlanes = predStack.shape[0]
-	# 	planeImages = []
-	# 	for i in range(numPlanes):
-	# 		plt.subplot(numPlanes, 1, i + 1)
-	# 		tempPlane = create2DLabelCheckSemanticImageForIndex(imageStack, predStack, 0, i)
-	# 		planeImages.append(tempPlane)
-	# 		plt.imshow(tempPlane)
-	# 		plt.title('Plane ' + str(i) + ' selected in red')
-	# 	plt.show()
-	# 	plt.close()
-	# 	mpl.use(currentMatlobBackend)
-
-
-	# def EvaluateModelEvaluateButtonPress(self):
-	# 	labelImage = self.pathChooserEvaluateLabels.entry.get()
-	# 	modelOutput = self.pathChooserEvaluateModelOutput.entry.get()
-	# 	labels = []
-	# 	im = Image.open(labelImage)
-	# 	for i, frame in enumerate(ImageSequence.Iterator(im)):
-	# 		framearr = np.asarray(frame)
-	# 		labels.append(framearr)
-	# 	labels = np.array(labels)
-
-	# 	h = h5py.File(modelOutput,'r')
-	# 	pred = np.array(h['vol0'][0])
-	# 	h.close()
-
-	# 	cutoffs = []
-	# 	ls = []
-	# 	ps = []
-	# 	percentDiffs = []
-	# 	precisions = []
-	# 	accuracies = []
-	# 	recalls = []
-	# 	for cutoff in range(0, 30, 1):
-	# 		cutoffs.append(cutoff)
-	# 		workingPred = np.copy(pred)
-	# 		workingPred[workingPred >= cutoff] = 255
-	# 		workingPred[workingPred != 255] = 0
-
-	# 		tp = np.sum((workingPred == labels) & (labels==255))
-	# 		tn = np.sum((workingPred == labels) & (labels==0))
-	# 		fp = np.sum((workingPred != labels) & (labels==0))
-	# 		fn = np.sum((workingPred != labels) & (labels==255))
-
-	# 		percentDiff = 1 - (np.count_nonzero(labels==255) - np.count_nonzero(workingPred==255))/np.count_nonzero(workingPred==255)
-	# 		percentDiffs.append(percentDiff)
-
-	# 		precisions.append(tp/(tp+fp))
-	# 		recalls.append(tp/(tp+fn))
-	# 		accuracies.append((tp + tn)/(tp + fp + tn + fn))
-
-	# 		ls.append(np.count_nonzero(labels))
-	# 		ps.append(np.count_nonzero(workingPred))
-	# 		del(workingPred)
-
-	# 	precisions = np.array(precisions)
-	# 	recalls = np.array(recalls)
-	# 	f1 = 2 * (precisions * recalls)/(precisions + recalls)
-
-	# 	plt.plot(cutoffs, precisions, label='precision')
-	# 	plt.plot(cutoffs, recalls, label='recall')
-	# 	plt.plot(cutoffs, f1, label='f1')
-	# 	#plt.plot(cutoffs, accuracies, label='accuracy')
-	# 	plt.plot(cutoffs, percentDiffs, label='percent differences')
-	# 	plt.legend()
-	# 	plt.grid()
-	# 	plt.show()
 
 	def ImageToolsCombineImageButtonPressTif(self):
 		try:
@@ -1122,14 +828,9 @@ class TabguiApp():
 
 	def OutputToolsModelOutputStatsButtonPress(self):
 		try:
-			# xmin, xmax = self.cropToFrameXEntry.get(), self.cropToFrameX2Entry.get()
-			# ymin, ymax = self.cropToFrameYEntry.get(), self.cropToFrameY2Entry.get()
-			# zmin, zmax = self.cropToFrameZEntry.get(), self.cropToFrameZ2Entry.get()
-
 			memStream = MemoryStream()
 			self.buttonOutputGetStats['state'] = 'disabled'
 			filename = self.fileChooserOutputStats.getFilepath() 
-			# print(filename+'...................')
 			csvfilename = self.fileChooserOutputToolsOutCSV.getFilepath()
 			if not csvfilename[-4:] == '.csv' and len(csvfilename) > 0:
 				csvfilename += '.csv'
@@ -1189,26 +890,16 @@ class TabguiApp():
 		self.root.mainloop()
 
 
-#######################################
-# Boilerplate TK Create & Run Window  #
-####################################### 
-
 from tkinter import font
 
 if __name__ == '__main__':
 	mpl.use('Agg')
-	# root = tk.Tk()
 	root = ThemedTk(theme='breeze')
 
 	root.option_add("*font", "sans-serif 11")
-	#print(font.families())
 	root.title("Anatomics MLT 2024")
 	root.minsize(width=750, height=700)
 	root.maxsize(width=750, height=700)
-
-	# Gets Physical Monitor Dimensions
-	# print(root.winfo_screenwidth())
-	# print(root.winfo_screenheight())
 
 	sp = os.getcwd()
 	imgicon = tk.PhotoImage(file=os.path.join(sp,'icon.png'))

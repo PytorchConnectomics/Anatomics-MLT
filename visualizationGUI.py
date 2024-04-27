@@ -1,8 +1,3 @@
-# ------------------------------------------------------------------------------------------
-# -                                 Modified Code From                                     -
-# - https://github.com/isl-org/Open3D/blob/master/examples/python/visualization/vis_gui.py -
-# ------------------------------------------------------------------------------------------
-
 import glob
 import numpy as np
 import open3d as o3d
@@ -144,13 +139,13 @@ class Settings:
 		self.show_axes = True
 		self.use_ibl = True
 		self.use_sun = True
-		self.new_ibl_name = None  # clear to None after loading
+		self.new_ibl_name = None 
 		self.ibl_intensity = 45000
 		self.sun_intensity = 45000
 		self.sun_dir = [0.577, -0.577, -0.577]
 		self.sun_color = gui.Color(1, 1, 1)
 
-		self.apply_material = True  # clear to False after processing
+		self.apply_material = True  
 		self._materials = {
 			Settings.LIT: rendering.MaterialRecord(),
 			Settings.UNLIT: rendering.MaterialRecord(),
@@ -164,9 +159,6 @@ class Settings:
 		self._materials[Settings.NORMALS].shader = Settings.NORMALS
 		self._materials[Settings.DEPTH].shader = Settings.DEPTH
 
-		# Conveniently, assigning from self._materials[...] assigns a reference,
-		# not a copy, so if we change the property of a material, then switch
-		# to another one, then come back, the old setting will still be there.
 		self.material = self._materials[Settings.LIT]
 
 	def set_material(self, name):
@@ -206,50 +198,25 @@ class AppWindow:
 
 		self.window = gui.Application.instance.create_window(
 			"Open3D", width, height)
-		w = self.window  # to make the code more concise
+		w = self.window 
 
 		# 3D widget
 		self._scene = gui.SceneWidget()
 		self._scene.scene = rendering.Open3DScene(w.renderer)
-		# self._scene.set_on_sun_direction_changed(self._on_sun_dir)
-
-		# Model name and filename lists
 
 		self.modelFilenameList = []
 		self.modelNameList = []
 		self.origionalGeometries = {}
-
-		# 2D Cloud Init
 		self.tiffFile = ''
 		self.tiffShape = [2, 2, 2]
-
-		#Opacity
 		self.opacity = 100.0
 
-		# ---- Settings panel ----
-		# Rather than specifying sizes in pixels, which may vary in size based
-		# on the monitor, especially on macOS which has 220 dpi monitors, use
-		# the em-size. This way sizings will be proportional to the font size,
-		# which will create a more visually consistent size across platforms.
 		em = w.theme.font_size
 		separation_height = int(round(0.5 * em))
 
-		# Widgets are laid out in layouts: gui.Horiz, gui.Vert,
-		# gui.CollapsableVert, and gui.VGrid. By nesting the layouts we can
-		# achieve complex designs. Usually we use a vertical layout as the
-		# topmost widget, since widgets tend to be organized from top to bottom.
-		# Within that, we usually have a series of horizontal layouts for each
-		# row. All layouts take a spacing parameter, which is the spacing
-		# between items in the widget, and a margins parameter, which specifies
-		# the spacing of the left, top, right, bottom margins. (This acts like
-		# the 'padding' property in CSS.)
 		self._settings_panel = gui.Vert(
 			0, gui.Margins(0.25 * em, 0.25 * em, 0.25 * em, 0.25 * em))
 
-		# Create a collapsible vertical widget, which takes up enough vertical
-		# space for all its children when open, but only enough for text when
-		# closed. This is useful for property pages, so the user can hide sets
-		# of properties they rarely use.
 		view_ctrls = gui.CollapsableVert("View controls", 0.25 * em,
 										 gui.Margins(em, 0, 0, 0))
 		view_ctrls.set_is_open(False)
@@ -268,12 +235,8 @@ class AppWindow:
 		self._model_button.set_on_clicked(self._set_mouse_mode_model)
 
 		view_ctrls.add_child(gui.Label("Mouse controls"))
-		# We want two rows of buttons, so make two horizontal layouts. We also
-		# want the buttons centered, which we can do be putting a stretch item
-		# as the first and last item. Stretch items take up as much space as
-		# possible, and since there are two, they will each take half the extra
-		# space, thus centering the buttons.
-		h = gui.Horiz(0.25 * em)  # row 1
+
+		h = gui.Horiz(0.25 * em) 
 		h.add_stretch()
 		h.add_child(self._arcball_button)
 		h.add_child(self._fly_button)
@@ -297,11 +260,6 @@ class AppWindow:
 
 		view_ctrls.add_fixed(separation_height)
 		self._settings_panel.add_child(view_ctrls)
-
-
-
-		########################################################################################
-
 
 
 		material_settings = gui.CollapsableVert("Material settings", 0,
@@ -344,22 +302,11 @@ class AppWindow:
 
 		material_settings.add_fixed(separation_height)
 		self._settings_panel.add_child(material_settings)
-		# ----
 
-		# Normally our user interface can be children of all one layout (usually
-		# a vertical layout), which is then the only child of the window. In our
-		# case we want the scene to take up all the space and the settings panel
-		# to go above it. We can do this custom layout by providing an on_layout
-		# callback. The on_layout callback should set the frame
-		# (position + size) of every child correctly. After the callback is
-		# done the window will layout the grandchildren.
 		w.set_on_layout(self._on_layout)
 		w.add_child(self._scene)
 		w.add_child(self._settings_panel)
 
-
-		###########################################################################################
-		# Add Remove Models
 		models = gui.CollapsableVert("Model Manipulation", 0,
 										gui.Margins(em, 0, 0, 0))
 		models.set_is_open(False)
@@ -367,7 +314,7 @@ class AppWindow:
 		self._model_to_remove_combo = gui.Combobox()
 		self._model_to_remove_combo.add_item('No Models Yet')
 
-		h = gui.Horiz(0.25 * em)  # row 1
+		h = gui.Horiz(0.25 * em) 
 		h.add_stretch()
 		h.add_child(gui.Label("Model To Edit:"))
 		h.add_child(self._model_to_remove_combo)
@@ -433,9 +380,6 @@ class AppWindow:
 		models.add_fixed(separation_height)
 		self._settings_panel.add_child(models)
 
-		###########################################################################
-		# 2D Image Showing
-
 		twoDImage = gui.CollapsableVert("2D Image", 0,
 								gui.Margins(em, 0, 0, 0))
 		twoDImage.set_is_open(False)
@@ -448,7 +392,6 @@ class AppWindow:
 		twoDImage.add_fixed(separation_height)
 
 		h = gui.Horiz(0.25 * em)
-		#h.add_stretch()
 		h.add_child(gui.Label("Choose axis for Slice:"))
 		xButton = gui.Button('X')
 		xButton.set_on_clicked(self.tiffXButtonClicked)
@@ -484,10 +427,6 @@ class AppWindow:
 
 		self._settings_panel.add_child(twoDImage)
 
-
-		# ---- Menu ----
-		# The menu is global (because the macOS menu is global), so only create
-		# it once, no matter how many windows are created
 		if gui.Application.instance.menubar is None:
 			if isMacOS:
 				app_menu = gui.Menu()
@@ -509,24 +448,15 @@ class AppWindow:
 
 			menu = gui.Menu()
 			if isMacOS:
-				# macOS will name the first menu item for the running application
-				# (in our case, probably "Python"), regardless of what we call
-				# it. This is the application menu, and it is where the
-				# About..., Preferences..., and Quit menu items typically go.
 				menu.add_menu("Example", app_menu)
 				menu.add_menu("File", file_menu)
 				menu.add_menu("Settings", settings_menu)
-				# Don't include help menu unless it has something more than
-				# About...
 			else:
 				menu.add_menu("File", file_menu)
 				menu.add_menu("Settings", settings_menu)
 				menu.add_menu("Help", help_menu)
 			gui.Application.instance.menubar = menu
 
-		# The menubar is global, but we need to connect the menu items to the
-		# window, so that the window can call the appropriate function when the
-		# menu item is activated.
 		w.set_on_menu_item_activated(AppWindow.MENU_OPEN, self._on_menu_open)
 		w.set_on_menu_item_activated(AppWindow.MENU_EXPORT,
 									 self._on_menu_export)
@@ -534,7 +464,6 @@ class AppWindow:
 		w.set_on_menu_item_activated(AppWindow.MENU_SHOW_SETTINGS,
 									 self._on_menu_toggle_settings_panel)
 		w.set_on_menu_item_activated(AppWindow.MENU_ABOUT, self._on_menu_about)
-		# ----
 
 		self._apply_settings()
 
@@ -575,8 +504,6 @@ class AppWindow:
 		if self.settings.new_ibl_name is not None:
 			self._scene.scene.scene.set_indirect_light(
 				self.settings.new_ibl_name)
-			# Clear new_ibl_name, so we don't keep reloading this image every
-			# time the settings are applied.
 			self.settings.new_ibl_name = None
 		self._scene.scene.scene.enable_indirect_light(self.settings.use_ibl)
 		self._scene.scene.scene.set_indirect_light_intensity(
@@ -606,9 +533,6 @@ class AppWindow:
 		self._point_size.double_value = self.settings.material.point_size
 
 	def _on_layout(self, layout_context):
-		# The on_layout callback should set the frame (position + size) of every
-		# child correctly. After the callback is done the window will layout
-		# the grandchildren.
 		r = self.window.content_rect
 		self._scene.frame = r
 		width = 17 * layout_context.theme.font_size
@@ -668,9 +592,6 @@ class AppWindow:
 		print(self.settings.material)
 		print(dir(self.settings.material))
 
-		# for thing in dir(self.settings.material):
-		#     print(thing,':', self.settings.material[thing])
-
 		print(self.settings.material.has_alpha)
 		print(self.settings.material.transmission)
 
@@ -681,8 +602,6 @@ class AppWindow:
 
 		print()
 		print('======================')
-		# print(self.settings.material.base_color)
-		# self.opacity = size / 100.0 * 255
 		self.settings.apply_material = True
 		self._apply_settings()
 
@@ -707,7 +626,7 @@ class AppWindow:
 
 		fullGeometry = self.origionalGeometries[toCrop]
 
-		if hasattr(fullGeometry, 'meshes'): # Mesh
+		if hasattr(fullGeometry, 'meshes'): 
 			box = fullGeometry.meshes[0].mesh.get_axis_aligned_bounding_box()
 
 			minBounds = box.get_min_bound()
@@ -721,9 +640,7 @@ class AppWindow:
 			newBox = o3d.geometry.AxisAlignedBoundingBox(minBounds, maxBounds)
 
 			fullGeometry.meshes[0].mesh = fullGeometry.meshes[0].mesh.crop(newBox)
-
-
-		else: #Is probably a point cloud?
+		else:
 			box = fullGeometry.get_axis_aligned_bounding_box()
 
 			minBounds = box.get_min_bound()
@@ -745,17 +662,6 @@ class AppWindow:
 			self._model_to_remove_combo.selected_text = toCrop
 
 			return newGeom
-
-		# newMesh = fullGeometry.meshes[0].mesh.crop(newBox)
-
-		# print('New Mesh Type:', type(newMesh))
-		# newGeometry = o3d.visualization.rendering.TriangleMeshModel()
-		# print(dir(newGeometry))
-		# newGeometry.meshes.append(newMesh)
-		# #del(fullGeometry)
-
-		# self._scene.scene.remove_geometry(toCrop)
-		# self._scene.scene.add_model(toCrop, newGeometry)
 
 	def uncropButtonClick(self):
 		toCrop = self._model_to_remove_combo.selected_text
@@ -836,7 +742,6 @@ class AppWindow:
 		dlg.add_filter(".pts", "3D Points files (.pts)")
 		dlg.add_filter("", "All files")
 
-		# A file dialog MUST define on_cancel and on_done functions
 		dlg.set_on_cancel(self._on_file_dialog_cancel)
 		dlg.set_on_done(self._on_load_dialog_done)
 		self.window.show_dialog(dlg)
@@ -849,7 +754,6 @@ class AppWindow:
 			"Tiff Image Stack (.tif, .tiff")
 		dlg.add_filter("", "All files")
 
-		# A file dialog MUST define on_cancel and on_done functions
 		dlg.set_on_cancel(self._on_file_dialog_cancel)
 		dlg.set_on_done(self._on_load_dialog_done_tiff)
 		self.window.show_dialog(dlg)
@@ -942,25 +846,15 @@ class AppWindow:
 			AppWindow.MENU_SHOW_SETTINGS, self._settings_panel.visible)
 
 	def _on_menu_about(self):
-		# Show a simple dialog. Although the Dialog is actually a widget, you can
-		# treat it similar to a Window for layout and put all the widgets in a
-		# layout which you make the only child of the Dialog.
 		em = self.window.theme.font_size
 		dlg = gui.Dialog("About")
 
-		# Add the text
 		dlg_layout = gui.Vert(em, gui.Margins(em, em, em, em))
 		dlg_layout.add_child(gui.Label("Open3D GUI Example"))
 
-		# Add the Ok button. We need to define a callback function to handle
-		# the click.
 		ok = gui.Button("OK")
 		ok.set_on_clicked(self._on_about_ok)
 
-		# We want the Ok button to be an the right side, so we need to add
-		# a stretch item to the layout, otherwise the button will be the size
-		# of the entire row. A stretch item takes up as much space as it can,
-		# which forces the button to be its minimum size.
 		h = gui.Horiz()
 		h.add_stretch()
 		h.add_child(ok)
@@ -1013,11 +907,9 @@ class AppWindow:
 		if geometry is not None or mesh is not None:
 			try:
 				if mesh is not None:
-					# Triangle model
 					self._scene.scene.add_model(pathTail, mesh)
 					success = True
 				else:
-					# Point cloud
 					self._scene.scene.add_geometry(pathTail, geometry,
 												   self.settings.material)
 					success = True
@@ -1047,7 +939,7 @@ class AppWindow:
 		def on_image(image):
 			img = image
 
-			quality = 9  # png
+			quality = 9  
 			if path.endswith(".jpg"):
 				quality = 100
 			o3d.io.write_image(path, img, quality)
@@ -1055,8 +947,6 @@ class AppWindow:
 		self._scene.scene.scene.render_to_image(on_image)
 
 def runVisualizationWindow():
-	# We need to initialize the application, which finds the necessary shaders
-	# for rendering and prepares the cross-platform window abstraction.
 	gui.Application.instance.initialize()
 
 	w = AppWindow(1024, 768)
@@ -1069,7 +959,6 @@ def runVisualizationWindow():
 			w.window.show_message_box("Error",
 									  "Could not open file '" + path + "'")
 
-	# Run the event loop. This will not return until the last window is closed.
 	gui.Application.instance.run()
 
 if __name__ == "__main__":

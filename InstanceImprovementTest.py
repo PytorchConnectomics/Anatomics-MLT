@@ -186,7 +186,6 @@ def instanceProcess(inputH5Filename, cubeSize=1000, stride = 250, combineThresho
 							h5Temp[subidMask] = instanceCounter
 							instanceCounter += 1
 						
-				#Wrap Up
 				print("Writing")
 				h5out[xmin:xmax, ymin:ymax, zmin:zmax] = h5Temp
 				map_[xmin:xmax, ymin:ymax, zmin:zmax] = 1

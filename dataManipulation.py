@@ -60,45 +60,6 @@ def getImageFromDataset(inputDataset, zindex):
 	else:
 		raise Exception('Unknown Dataset filetype ' + inputDataset[inputDataset.rindex('.'):] + ' Passed to getImageFromDataset')
 
-# def getShapeOfDataset(inputDataset): # DUPLICATE in utils, commented out for now
-# 	if inputDataset[-4:] == '.tif': # https://stackoverflow.com/questions/46436522/python-count-total-number-of-pages-in-group-of-multi-page-tiff-files
-# 		img = Image.open(inputDataset)
-# 		width, height = img.size
-# 		count = 0
-
-# 		while True:
-# 			try:   
-# 				img.seek(count)
-# 			except EOFError:
-# 				break       
-# 			count += 1
-
-# 		return count, height, width
-
-# 	elif inputDataset[-5:] == '.json':
-		
-# 		with open(inputDataset, 'r') as inFile:
-# 			d = json.load(inFile)
-# 		# numFiles = len(d['image'])
-# 		# img = Image.open(d['image'][0])
-# 		# width, height = img.size
-# 		return d['depth'], d['height'], d['width']
-
-# 	elif inputDataset[-4:] == '.txt':
-# 		filteredImages = []
-# 		with open(inputDataset, 'r') as inFile:
-# 			images = inFile.readlines()
-# 		for image in images:
-# 			if len(image.strip()) > 3:
-# 				filteredImages.append(image)
-# 		img = Image.open(filteredImages[0].strip())
-# 		width, height = img.size
-# 		count = len(filteredImages)
-# 		return count, height, width
-
-# 	else:
-# 		raise Exception('Unknown Dataset filetype ' + inputDataset[inputDataset.rindex('.'):] + ' Passed to getShapeOfDataset')
-
 def create2DLabelCheckSemanticImage(inputDataset, modelOutputDataset, z, colors = ['#ffe119', '#4363d8', '#f58231', '#dcbeff', '#800000', '#000075', '#a9a9a9', '#ffffff', '#000000']):
 	"""Creates an image with the raw image from `inputDataset` in the background, and the model's predictions (semantic models only) highlighted in different colors on top of it
 
@@ -425,8 +386,6 @@ def create3DLabelAnimationSemantic(inputDataset, modelOutput, outputDir, scaleFa
 		ax2.axes.set_xlim3d(left=0, right=int(dataset.shape[1] / 1 + 1))
 		ax2.set_xlabel('X')
 
-		# ax2.view_init(-140, 60)
-
 		plt.savefig(os.path.join(outputDir, 'frame' + str(z).zfill(4) + '.png'))
 		plt.close()
 		tc.tick()
@@ -559,7 +518,7 @@ def getWeightsFromLabels(labelStack):
 					im = Image.open(label.rstrip())
 					listOfImages.append(im)
 
-	elif labelStack[-5:] == '.json': #TODO add support for .json
+	elif labelStack[-5:] == '.json': 
 		pass
 
 	elif labelStack[-4:] == '.tif' or labelStack[-5:] == '.tiff':
@@ -581,7 +540,6 @@ def getWeightsFromLabels(labelStack):
 		nSamples.append(countDic[key])
 	m = max(nSamples)
 	normedWeights = [1 - (x / sum(nSamples)) for x in nSamples]
-	# normedWeights = [x / sum(nSamples) for x in nSamples]
 	return normedWeights
 
 def instanceArrayToMesh(d, uniqueList=None):
@@ -628,7 +586,7 @@ def instanceArrayToMesh(d, uniqueList=None):
 		deltaTracker.tick()
 		deltaTracker.print()
 	fullMesh = fullMesh.simplify_vertex_clustering(3)
-	fullMesh = fullMesh.filter_smooth_taubin(number_of_iterations=100)#filter_smooth_simple(number_of_iterations=10)
+	fullMesh = fullMesh.filter_smooth_taubin(number_of_iterations=100)
 	fullMesh.compute_vertex_normals()
 	return fullMesh
 
@@ -697,9 +655,9 @@ def getMultiClassImage(imageFilepath, uniquePixels=[]):
 
 	im = im.convert("RGBA")
 	data = np.array(im)
-	info = np.iinfo(data.dtype) # Get the information of the incoming image type
-	data = data.astype(np.float64) / info.max # normalize the data to 0 - 1
-	data = 255 * data # Now scale by 255
+	info = np.iinfo(data.dtype) 
+	data = data.astype(np.float64) / info.max 
+	data = 255 * data 
 	a = data.astype(np.uint8)
 	b = np.zeros((a.shape[0],a.shape[1]))
 	c = list(b)
@@ -764,7 +722,7 @@ def createH5FromNumpy(npArray, filename):
 	h5f.create_dataset('dataset_1', data=npArray)
 	h5f.close()
 
-def getImagesForLabels(d, index): #TODO check if this method is being called. I'm not sure why this is here.
+def getImagesForLabels(d, index):
 	indexesToCheck = []
 	for i in range(d.shape[0]):
 		if i == index:
@@ -862,7 +820,7 @@ def arrayToMesh(d, index):
 	mesh.compute_vertex_normals()
 	print('Simplification Calculations')
 	mesh = mesh.simplify_vertex_clustering(3)
-	mesh = mesh.filter_smooth_taubin(number_of_iterations=100)#filter_smooth_simple(number_of_iterations=10)
+	mesh = mesh.filter_smooth_taubin(number_of_iterations=100)
 	print('Calculating final Normals')
 	mesh.compute_vertex_normals()
 	return mesh
@@ -928,44 +886,6 @@ def subSampled3DH5(dataset, sampleFactor, cubeSize = 1000):
 				toReturn[int(xmin/sampleFactor):int(xmax/sampleFactor + xpad), int(ymin/sampleFactor):int(ymax/sampleFactor + ypad), int(zmin/sampleFactor):int(zmax/sampleFactor + zpad)] = startSlice
 
 	return toReturn
-
-# def getMultiClassImage(imageFilepath, uniquePixels=[]): #TODO check why this is duplicate and get rid of one if possible
-# 	if type(imageFilepath) == type('Test'):
-# 		im = Image.open(imageFilepath).convert('RGB')
-# 	else:
-# 		im = imageFilepath.convert('RGB')
-# 	#print('imtype',type(im))
-# 	data = np.array(im)
-# 	#print(data)
-# 	info = np.iinfo(data.dtype) # Get the information of the incoming image type
-# 	data = data.astype(np.float64) / info.max # normalize the data to 0 - 1
-# 	data = 255 * data # Now scale by 255
-# 	a = data.astype(np.uint8)
-# 	b = np.zeros((a.shape[0],a.shape[1]))
-# 	c = list(b)
-# 	#print('atype',type(a),a.shape)
-# 	#print(np.unique(a))
-# 	for i in range(a.shape[0]):
-# 		for j in range(a.shape[1]):
-# 			#print(a[i,j])
-# 			value = tuple(a[i,j])
-# 			if value in uniquePixels:
-# 				c[i][j] = uniquePixels.index(value)
-# 			else:
-# 				uniquePixels.append(value)
-# 				c[i][j] = uniquePixels.index(value)
-# 	d = np.array(c)
-# 	#toReturn = Image.fromarray(d)
-# 	return d, uniquePixels
-
-# def getMultiClassImageStack(imageFilepath,uniquePixels=[]): #TODO check why this is duplicate and get rid of one if possible
-# 	labelStack = []
-# 	unique = []
-# 	im = Image.open(imageFilepath)
-# 	for i, imageSlice in enumerate(ImageSequence.Iterator(im)):
-# 		labels, unique = getMultiClassImage(imageSlice, uniquePixels=unique)
-# 		labelStack.append(labels)
-# 	return np.array(labelStack), unique
 
 def makeLabels(filename):
 	"""Calls getMultiClassImageStack, and returns 'labels', discarding 'unique' which is also returned
