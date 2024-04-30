@@ -2,7 +2,7 @@
 
 This screen lets you see your 3D geometries, as well as do some manipulations like cropping, and placing slices of an image in the 3D model where they correspond.
 
-![Visualize Screen](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/visualizeScreenshot.png)
+![Visualize Screen](../screenshots/visualizeScreenshot.png)
 
 Here, you can add .ply files to the list of files to visualize by clicking the choose file button. You can choose as many or as few files as you want.
 
@@ -17,7 +17,7 @@ Click the visualize button, and after some brief calculation and file loading, a
 
 This tab allows the use of Neuroglancer, a visualization package, to visualize the generated data. 
 
-![Visualize Screen](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/visualizeTab.png) 
+![Visualize Screen](../screenshots/visualizeTab.png) 
 
 Raw Images: Select the image stack that was used for the auto-label process.  
 
