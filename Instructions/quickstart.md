@@ -1,5 +1,5 @@
 # Quickstart Guide
-After installation of Anatomics MLT 2024 [here](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/Instructions/installation.md) a test training may be accomplished by following the instructions below.  
+After installation of Anatomics MLT 2024 [here](installation.md) a test training may be accomplished by following the instructions below.  
 
   
 
@@ -29,7 +29,7 @@ The main program should now be visible on your screen (if "python gui.py" does n
 
   
 
-![screenshot of first screen that opens when you open program](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/dataTab.png) 
+![screenshot of first screen that opens when you open program](../screenshots/dataTab.png) 
 
   
 
@@ -37,12 +37,12 @@ The main program should now be visible on your screen (if "python gui.py" does n
 
 The first step is to obtain a training set of images, and a training label set. Here is an example of a training image: 
 
-![training image example](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/mitoTrain.png) 
+![training image example](../screenshots/mitoTrain.png) 
 
 
 Here is an example of a training label: 
 
-![training label example](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/mitoLabel.png) 
+![training label example](../screenshots/mitoLabel.png) 
 
 When using the models/algorithms in this program, it is important that image stacks are combined into one stacked .tif file. 
 
@@ -51,7 +51,7 @@ Because we are running a semantic segmentation task, for input "Labels" images, 
 
  ## Data Check 
 
-![Data Check Window](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/dataTab.png) 
+![Data Check Window](../screenshots/dataTab.png) 
 
 After producing a training dataset, the data format can be checked for accuracy in Anatomics MLT in the  “Data Check” tab.  Select the original image data stack in the upper box and the label stack that was generated from the image stack in the lower box. Click “Launch Neuroglancer”. Depending on the size of the file, a blue link will appear after a few seconds. Click the link to view the data in your browser. After Neuroglancer opened, there will be four sub-windows. Each represents a different view perspective (e.g. xy axis view; xz axis view; etc). We recommend using the view window to the lower right. In the top right corner of this sub window is a small button to enlarge the window. You may use your mouse scroll wheel to move between different z-layers of the image stack.  
 
@@ -73,7 +73,7 @@ The window should look like this:
 
   
 
-![Train Window](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/trainTab.png) 
+![Train Window](../screenshots/trainTab.png) 
 
   
 
@@ -105,7 +105,7 @@ Now that the model is trained, automatic labelling can be attempted. Click the t
 
   
 
-![Auto Label Window](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/labelTab.png) 
+![Auto Label Window](../screenshots/labelTab.png) 
 
   
 
@@ -131,7 +131,7 @@ Now that the prediction is done, you can use the program to get statistics for t
 
   
 
-![Output Tools Window](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/outputtoolTab.png) 
+![Output Tools Window](../screenshots/outputtoolTab.png) 
 
   
 
@@ -149,7 +149,7 @@ Please note, with only 10000 iterations for the training, the data will not be v
 
 ## Visualize 
 
- ![Neuroglancer Window](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/visualizeTab.png) 
+ ![Neuroglancer Window](../screenshots/visualizeTab.png) 
 
 - [ ] Click the Neuroglancer tab. 
 
