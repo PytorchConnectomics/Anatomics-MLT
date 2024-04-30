@@ -2,7 +2,7 @@
 
 This screen has a few tools that let you take the output model .h5 and further process it. Make Geometries lets you make 3D geometry files from your model output. These can be visualized with this program, or opened up in other popular softwares like Blender. The Get Model Output Stats section lets you measure volumes from your model output.
 
-![Output Tools Screen](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/outputtoolTab.png)
+![Output Tools Screen](../screenshots/outputtoolTab.png)
 
 Model Output: Chose an .h5 file of interest that was generated during the auto label process.  
 
