@@ -65,7 +65,7 @@ python GPU_test.py
 
 The main program should now visible on your screen: 
 
-![screenshot of first screen that opens when you open program](../main/screenshots/trainTab.png) 
+![screenshot of first screen that opens when you open program](../screenshots/trainTab.png) 
 
   
 
