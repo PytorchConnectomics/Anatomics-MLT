@@ -6,7 +6,7 @@ Brief Description of Auto-Labelling
 
 To use the Auto-Labelling Feature, you must first train a model that can be chosen for the Auto-Label process. 
 
-![Auto Label Screen](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/labelTab.png) 
+![Auto Label Screen](../screenshots/labelTab.png) 
 
   
 ## Detailed Description of Each Parameter 
@@ -17,7 +17,7 @@ To use the Auto-Labelling Feature, you must first train a model that can be chos
 
 - Model To Use:       Select the name of the model to be used. This is a file that was generated during the training using the labels highlighting your structures of interest.  
 
-- Pad Size:            The model can add padding around the outside of a section that the model is currently processing. More info can be found ![here](https://deepai.org/machine-learning-glossary-and-terms/padding) 
+- Pad Size:            The model can add padding around the outside of a section that the model is currently processing. More info can be found [here](https://deepai.org/machine-learning-glossary-and-terms/padding) 
 
 - Aug Mode: Augmentation Mode. We would recommend using a ‘mean’ mode, as it will take the average among these augmented/modified samples.   
 
