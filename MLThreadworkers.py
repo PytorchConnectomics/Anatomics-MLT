@@ -39,10 +39,13 @@ kill_neuroglancer=False
 def openURLcallback(url):
     webbrowser.open_new(url)
 
-def openNeuroGlancerThread(images, labels, labelToChange, scale=(20,20,20), mode='pre'):
+def openNeuroGlancerThread(images, labels, labelToChange, scale=(20,20,20), segThreshold=255, mode='pre'):
 	def ngLayer(data,res,oo=[0,0,0],tt='segmentation'):
 		return neuroglancer.LocalVolume(data,dimensions=res,volume_type=tt,voxel_offset=oo)
-
+	try:
+		segThreshold=int(segThreshold)
+	except:
+		print("Error with SegThreshold, setting to 255/2")
 	ip = 'localhost' 
 	port = 9999 
 	neuroglancer.set_server_bind_address(bind_address=ip,bind_port=port)

@@ -489,6 +489,17 @@ class TabguiApp():
 		self.entryNeuroZ.configure()
 		self.entryNeuroZ.grid(column='1', row='4',sticky='ew')
 
+		self.labelSegmentationThreshold = ttk.Label(self.frameNeuroGlancer)
+		self.labelSegmentationThreshold.configure(text='Segmentation Threshold(1-255): ')
+		self.labelSegmentationThreshold.grid(column='0', row='5',sticky='ew')
+
+		_text_ = '''255'''
+		self.entrySegmentationThreshold = ttk.Entry(self.frameNeuroGlancer)
+		self.entrySegmentationThreshold.delete('0', 'end')
+		self.entrySegmentationThreshold.insert('0', _text_)
+		self.entrySegmentationThreshold.configure()
+		self.entrySegmentationThreshold.grid(column='1', row='5',sticky='ew')
+
 		self.labelNeuroglancerURL = ttk.Label(self.frameNeuroGlancer, foreground="blue", cursor="hand2")
 		self.labelNeuroglancerURL.configure(text="")
 		self.labelNeuroglancerURL.grid(column="0", row="6", columnspan="2")
@@ -518,8 +529,8 @@ class TabguiApp():
 		x = int(self.entryNeuroX.get())
 		y = int(self.entryNeuroY.get())
 		z = int(self.entryNeuroZ.get())
-
-		self.neuroglancerThread = threading.Thread(target=openNeuroGlancerThread, args=(imagefilepath, modelOutputFilePath, self.labelNeuroglancerURL,(z,y,x),'post'))
+		segThreshold = int(self.entrySegmentationThreshold.get())
+		self.neuroglancerThread = threading.Thread(target=openNeuroGlancerThread, args=(imagefilepath, modelOutputFilePath, self.labelNeuroglancerURL,segThreshold,(z,y,x),'post'))
 		self.neuroglancerThread.setDaemon(True)
 		self.neuroglancerThread.start()
 
