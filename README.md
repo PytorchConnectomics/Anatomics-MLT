@@ -4,7 +4,7 @@ General description of the project including instructions and explainations. Giv
 
 ## Table of contents
 
-- [Installation, Updating, and Uninstalling](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/Instructions/installation.md)
+- [Installation, Updating, and Uninstalling](blob/main/Instructions/installation.md)
 
 - [Quickstart Guide, guides you briefly through an example use case of the program](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/Instructions/quickstart.md)
 
