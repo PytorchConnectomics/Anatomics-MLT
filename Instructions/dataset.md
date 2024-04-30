@@ -8,7 +8,7 @@ The ImageTools screen:
 
   
 
-![Image Tools Screen](https://github.com/ajbrookhouse/WSU_PlantBio_ML/blob/main/screenshots/imagetoolTab.png) 
+![Image Tools Screen](../screenshots/imagetoolTab.png) 
 
   
 
